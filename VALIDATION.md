@@ -1,0 +1,14 @@
+# CPU release verification
+
+Validated 2026-10-13 on macOS Apple Silicon, CPython 3.11.15, PyTorch 2.5.1, PyG 2.6.1, torch-cluster 1.6.3, Lightning 2.5.0.post0, RDKit 2024.9.6 and NumPy 1.26.4. Computation used CPU only with two PyTorch threads. A new isolated environment installed the declared dependencies; torch-cluster was compiled using the documented macOS compiler flag.
+
+- **27 tests passed** in the final local CPU suite. Core probability tests compare the projected Gaussian NLL and gradients against an explicit orthonormal subspace basis; check covariance/noise, full covariance-Jacobian divergence, exact Rademacher expectation, JVP/VJP duality, zero-diffusion equivalence and Gaussian-path sampling. A separate analytic test checks linear scheduling in both drift and noise.
+- The native SO(3) architecture passes forward/backward, variable-molecule batching, proper-rotation equivariance and finite ODE/SDE tests.
+- Full original-vs-release comparison uses the 20-layer, 160-channel, **9,090,130-parameter** native model, identical weights and fixed molecular inputs. Velocity, log-variance, input derivatives, exact projected divergence, NLL, every parameter gradient, ODE output, constant-mode SDE output and optimizer LR schedule agree exactly (maximum absolute difference 0).
+- Actual local GEOM raw records were processed with the native processor: four training, two validation and two test molecules with distinct graph identities, one conformer each. This small smoke split is not the benchmark split. Two epochs (four optimizer steps), epoch checkpoint recovery, ODE/SDE generation, native COV/MAT, chirality processing, reference-state diagnostics and a PNG posterior-readout example completed. Resumed weights equal uninterrupted weights exactly; optimizer step and scheduler state match.
+- Synthetic RDKit fixtures separately test installation, data isolation, interrupted generation/metric recovery, checksum/identity/overwrite protections, chirality boundaries and ordinary training recovery. Fixture scores are not benchmark results.
+- Package acceptance builds a wheel/sdist, installs the wheel and executes its commands outside the source checkout without Git. CI repeats CPU tests and installed-wheel examples; GitHub Actions status is a separate live check.
+
+The native parallel RMSD evaluator requires ordinary OS shared-memory access. Local sandboxed workers failed at OpenMP shared-memory initialization; rerunning the CPU tests with normal OS access passed. The serial evaluator (`--workers 1`) also ran successfully.
+
+Not validated: CUDA, BF16, multi-GPU/DDP, large-scale training, official benchmark metrics or wall-time comparisons. No trained model is distributed. The released linear schedule is an explicitly tested addition; constant mode is the branch used for original numerical parity. The public default is a configurable standard training run, not a reconstruction of historical multi-stage training.
