@@ -1,3 +1,20 @@
+# Moved to the PFM monorepo
+
+The maintained **Molecules** implementation is now in
+[`posterior-flow-matching/molecules/`](https://github.com/merry7cherry/posterior-flow-matching/tree/main/molecules).
+
+PFM now uses one repository with four parallel directories: `images/`,
+`pointcloud/`, `molecules/`, and `pusht/`. Follow the task README in the main
+repository for installation, training, ODE/SDE sampling, evaluation and diagnostics.
+
+This repository is archived for its release history. Its code and instructions
+below describe the previous standalone release.
+
+[All PFM code](https://github.com/merry7cherry/posterior-flow-matching#code) ·
+[Project page](https://merry7cherry.github.io/posterior-flow-matching/)
+
+---
+
 # Posterior Flow Matching — Molecules
 
 Standard Posterior Flow Matching (PFM) for **GEOM-QM9 conformer generation**, built on the native ET-Flow SO(3)-equivariant molecular network and featurization. Learn a velocity mean and atomwise variance, then use one model for ODE/SDE generation and endpoint posterior readouts.
